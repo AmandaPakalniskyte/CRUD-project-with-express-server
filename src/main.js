@@ -1,16 +1,36 @@
+// eslint-disable-next-line import/no-extraneous-dependencies
 const express = require('express');
+const morgan = require('morgan');
+const cors = require('cors');
+require('dotenv').config();
+
 const housesRouter = require('./routers/houses-router');
 
 const server = express();
 
-//  Middleware
-server.use(express.json());
-server.use('/houses', housesRouter);
+const { SERVER_DOMAIN, SERVER_PROTOCOL, SERVER_PORT } = process.env;
+const constantsConfiguredInEnvFile = SERVER_DOMAIN && SERVER_PROTOCOL && SERVER_PORT;
 
-server.listen(2566, (err) => {
-  if (err) {
-    console.error('Serverio paleidimo klaida');
+try {
+  if (!constantsConfiguredInEnvFile) {
+    throw new Error('Project constants are not defined.\n\t Define constants in \'/.env\' file.');
   }
 
-  console.log('serveris veikia ant http://localhost:8005');
-});
+  // Middleware
+  server.use(express.json());
+  server.use(morgan('tiny'));
+  server.use(cors());
+
+  // Routes
+  server.use('/houses', housesRouter);
+
+  server.listen(SERVER_PORT, (err) => {
+    if (err) {
+      console.error('Serverio paleidimo klaida');
+    }
+
+    console.log(`serveris veikia ant ${SERVER_PROTOCOL}://${SERVER_DOMAIN}:${SERVER_PORT}`);
+  });
+} catch (err) {
+  console.error(err.message);
+}
