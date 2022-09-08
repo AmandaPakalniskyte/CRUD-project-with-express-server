@@ -2,14 +2,16 @@
 const express = require('express');
 const morgan = require('morgan');
 const cors = require('cors');
+const mongoose = require('mongoose');
 require('dotenv').config();
 
 const housesRouter = require('./routers/houses-router');
 
+
 const server = express();
 
-const { SERVER_DOMAIN, SERVER_PROTOCOL, SERVER_PORT } = process.env;
-const constantsConfiguredInEnvFile = SERVER_DOMAIN && SERVER_PROTOCOL && SERVER_PORT;
+const { SERVER_DOMAIN, SERVER_PROTOCOL, SERVER_PORT, DB_CONNECTION } = process.env;
+const constantsConfiguredInEnvFile = SERVER_DOMAIN && SERVER_PROTOCOL && SERVER_PORT && DB_CONNECTION;
 
 try {
   if (!constantsConfiguredInEnvFile) {
@@ -24,13 +26,21 @@ try {
   // Routes
   server.use('/houses', housesRouter);
 
-  server.listen(SERVER_PORT, (err) => {
+  mongoose.connect(DB_CONNECTION, (err) => {
     if (err) {
-      console.error('Serverio paleidimo klaida');
+      throw err.message;
     }
 
-    console.log(`serveris veikia ant ${SERVER_PROTOCOL}://${SERVER_DOMAIN}:${SERVER_PORT}`);
+    console.log('connected to MongoDB Atlass');
+    server.listen(SERVER_PORT, (err) => {
+      if (err) {
+        console.error(err.message);
+      }
+
+      console.log(`server launched on ${SERVER_PROTOCOL}://${SERVER_DOMAIN}:${SERVER_PORT}`);
+    });
   });
+
 } catch (err) {
   console.error(err.message);
 }

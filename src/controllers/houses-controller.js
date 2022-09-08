@@ -1,118 +1,36 @@
 const { removeEmptyProps } = require('../helpers');
+const HouseModel = require('../models/house-model');
 
-const database = {
-  houses: [
-    {
-      id: '815C5D64-820D-2DCD-10AA-59EE2D0BC780',
-      title: 'Rasa',
-      description: 'Nullam vitae diam. Proin dolor. Nulla semper tellus id nunc interdum feugiat. Sed nec metus facilisis lorem tristique aliquet. Phasellus fermentum convallis ligula. Donec luctus aliquet odio. Etiam',
-      categoryId: 1,
-      img: 'https://images.unsplash.com/photo-1523217582562-09d0def993a6?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1480&q=80',
-      price: 800000,
-    },
-    {
-      id: 'E9522542-AB55-9279-A13C-03645AE88D28',
-      title: 'Liepa',
-      description: 'egestas rhoncus. Proin nisl sem, consequat nec, mollis vitae, posuere at, velit. Cras lorem lorem, luctus ut, pellentesque eget, dictum placerat, augue. Sed molestie. Sed id risus quis diam luctus lobortis. Class aptent taciti sociosqu ad litora torquent per conubia',
-      categoryId: 3,
-      img: 'https://images.unsplash.com/photo-1564013799919-ab600027ffc6?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2070&q=80',
-      price: 700000,
-    },
-    {
-      id: '25D5DF9E-91AA-0358-D7DA-A70C6C448F2A',
-      title: 'Šilas',
-      description: 'erat vel pede blandit congue. In scelerisque scelerisque dui. Suspendisse ac metus vitae velit egestas lacinia. Sed congue, elit sed consequat auctor, nunc nulla vulputate dui, nec tempus mauris erat eget ipsum. Suspendisse sagittis. Nullam vitae diam.',
-      categoryId: 3,
-      img: 'https://images.unsplash.com/photo-1480074568708-e7b720bb3f09?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2074&q=80',
-      price: 850000,
-    },
-    {
-      id: 'F1BB0713-A37A-9766-7896-26BDADC62132',
-      title: 'Ramuma',
-      description: 'dis parturient montes, nascetur ridiculus mus. Proin vel arcu eu odio tristique pharetra. Quisque ac libero nec ligula consectetuer rhoncus. Nullam velit dui, semper et, lacinia vitae, sodales at,',
-      categoryId: 2,
-      img: 'https://images.unsplash.com/photo-1582063289852-62e3ba2747f8?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2070&q=80',
-      price: 900000,
-    },
-    {
-      id: 'FDEA9082-2D95-F3B3-A5B2-F851EC375AAC',
-      title: 'Oazė',
-      description: 'dui, semper et, lacinia vitae, sodales at, velit. Pellentesque ultricies dignissim lacus. Aliquam rutrum lorem ac risus. Morbi metus. Vivamus euismod urna. Nullam lobortis quam a',
-      categoryId: 2,
-      img: 'https://images.unsplash.com/photo-1582268611958-ebfd161ef9cf?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2070&q=80',
-      price: 630000,
-    },
-    {
-      id: '6B09AC86-EBD2-41B1-1733-2AEEFE491165',
-      title: 'Sala',
-      description: 'nec ligula consectetuer rhoncus. Nullam velit dui, semper et, lacinia vitae, sodales at, velit. Pellentesque ultricies dignissim lacus. Aliquam rutrum lorem',
-      categoryId: 1,
-      conditionId: 12,
-      img: 'https://images.unsplash.com/photo-1571939228382-b2f2b585ce15?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2070&q=80',
-      price: 200000,
-    },
-    {
-      id: 'A565A92E-71B7-BEC0-EB49-A8E5B52DB31B2',
-      title: 'Svaja',
-      description: 'egestas, urna justo faucibus lectus, a sollicitudin orci sem eget massa. Suspendisse eleifend. Cras sed leo. Cras vehicula aliquet libero. Integer in magna.',
-      categoryId: 1,
-      img: 'https://images.unsplash.com/photo-1625602812206-5ec545ca1231?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2070&q=80',
-      price: 500000,
-    },
-    {
-      id: '6B09AC86-EBD2-41B1-1733-2AEEFE4165',
-      title: 'Kopa',
-      description: 'nec ligula consectetuer rhoncus. Nullam velit dui, semper et, lacinia vitae, sodales at, velit. Pellentesque ultricies dignissim lacus. Aliquam rutrum lorem',
-      categoryId: 3,
-      conditionId: 12,
-      img: 'https://images.unsplash.com/photo-1580587771525-78b9dba3b914?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1974&q=80',
-      price: 250000,
-    },
-    {
-      id: 'A565A92E-71B7-BEC0-EB49-A8E5B52DB312',
-      title: 'Sapnas',
-      description: 'egestas, urna justo faucibus lectus, a sollicitudin orci sem eget massa. Suspendisse eleifend. Cras sed leo. Cras vehicula aliquet libero. Integer in magna.',
-      categoryId: 1,
-      img: 'https://images.unsplash.com/photo-1575517111478-7f6afd0973db?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2070&q=80',
-      price: 550000,
-    },
-  ],
-};
+const isValidHouse = ({ title, description, categoryId, img, price }) =>
+  title !== undefined && typeof title === 'string' && title !== '' &&
+  description !== undefined && typeof description === 'string' && description !== '' &&
+  categoryId !== undefined && typeof categoryId === 'string' && categoryId !== '' &&
+  img !== undefined && typeof img === 'string' && img !== '' &&
+  price !== undefined && typeof price === 'number' && price > 0;
 
-let counter = 1;
-// eslint-disable-next-line no-plusplus
-const createId = () => String(++counter);
-
-const isValidHouse = ({
-  title, description, categoryId, img, price,
-}) => title !== undefined && typeof title === 'string' && title !== ''
-  && description !== undefined && typeof description === 'string' && description !== ''
-  && categoryId !== undefined && typeof categoryId === 'string' && categoryId !== ''
-  && img !== undefined && typeof img === 'string' && img !== ''
-  && price !== undefined && typeof price === 'number' && price > 0;
-
-const createCmpById = (houseId) => ({ id }) => id === houseId;
 
 const createHouseNotFoundError = (houseId) => ({
   message: `House with id '${houseId}' was not found`,
-  status: 404,
-});
+  status: 404
+})
 
 const createHouseBadDataError = (dataObj) => ({
   message: `House data is invalid:\n${JSON.stringify(dataObj, null, 4)}`,
-  status: 400,
+  status: 400
 });
 
-const fetchAll = (req, res) => {
-  res.status(200).json(database.houses);
+const fetchAll = async (req, res) => {
+  const houseDocuments = await HouseModel.find();
+
+  res.status(200).json(houseDocuments);
 };
 
-const fetch = (req, res) => {
+const fetch = async (req, res) => {
   const houseId = req.params.id;
 
   try {
-    const foundHouse = database.houses.find(createCmpById(houseId));
-    if (foundHouse === undefined) throw createHouseNotFoundError(houseId);
+    const foundHouse = await HouseModel.findById(houseId);
+    if (foundHouse === null) throw createHouseNotFoundError(houseId);
 
     res.status(200).json(foundHouse);
   } catch ({ status, message }) {
@@ -120,87 +38,77 @@ const fetch = (req, res) => {
   }
 };
 
-const create = (req, res) => {
+const create = async (req, res) => {
   const newHouseData = req.body;
 
   try {
     if (!isValidHouse(newHouseData)) throw createHouseBadDataError(newHouseData);
 
-    const newHouse = {
-      id: createId(),
-      ...newHouseData,
-    };
+    const newHouse = await HouseModel.create(newHouseData)
 
-    database.houses.push(newHouse);
+    res.status(201).json(newHouse)
 
-    res.status(201).json(newHouse);
   } catch ({ status, message }) {
     res.status(status).json({ message });
   }
 };
 
-const replace = (req, res) => {
+const replace = async (req, res) => {
   const houseId = req.params.id;
-  const {
-    title, description, categoryId, img, price,
-  } = req.body;
-  const newHouseData = {
-    title, description, categoryId, img, price,
-  };
+  const { title, description, categoryId, img, price } = req.body;
+  const newHouseData = { title, description, categoryId, img, price };
 
   try {
     if (!isValidHouse(newHouseData)) throw createHouseBadDataError(newHouseData);
 
-    const foundHouseIndex = database.houses.findIndex(createCmpById(houseId));
-    if (foundHouseIndex === -1) throw createHouseNotFoundError(houseId);
+    const updateHouse = await HouseModel.findByIdAndUpdate(
+      houseId,
+      newHouseData,
+      { new: true, runValidators: true }
+    );
 
-    const updatedHouse = {
-      id: database.houses[foundHouseIndex].id,
-      ...newHouseData,
-    };
+    if (updateHouse === null) throw createHouseNotFoundError(houseId);
 
-    database.houses[foundHouseIndex] = updatedHouse;
+    res.status(200).json(updateHouse)
 
-    res.status(200).json(updatedHouse);
+  } catch (error) {
+    const { status, message } = error;
+
+    if (status && message) {
+      res.status(status).json({ message });
+    } else {
+      res.status(400).json({ message: error.message });
+    }
+  }
+};
+
+const update = async (req, res) => {
+  const houseId = req.params.id;
+  const { title, description, categoryId, img, price } = req.body;
+  const newHouseData = removeEmptyProps({ title, description, categoryId, img, price });
+
+  try {
+    const updatedHouse = await HouseModel.findByIdAndUpdate(
+      houseId,
+      newHouseData,
+      { new: true }
+    );
+
+    if (updatedHouse === null) throw createHouseNotFoundError(houseId);
+
+    res.status(200).json(updatedHouse)
+
   } catch ({ status, message }) {
     res.status(status).json({ message });
   }
 };
 
-const update = (req, res) => {
-  const houseId = req.params.id;
-  const {
-    title, description, categoryId, img, price,
-  } = req.body;
-  const newHouseData = removeEmptyProps({
-    title, description, categoryId, img, price,
-  });
-
-  try {
-    const foundHouseIndex = database.houses.findIndex(createCmpById(houseId));
-    if (foundHouseIndex === -1) throw createHouseNotFoundError(houseId);
-
-    const updatedHouse = {
-      ...database.houses[foundHouseIndex],
-      ...newHouseData,
-    };
-
-    database.houses[foundHouseIndex] = updatedHouse;
-
-    res.status(200).json(updatedHouse);
-  } catch ({ status, message }) {
-    res.status(status).json({ message });
-  }
-};
-
-const remove = (req, res) => {
+const remove = async (req, res) => {
   const houseId = req.params.id;
 
   try {
-    const foundHouseIndex = database.houses.findIndex(createCmpById(houseId));
-    if (foundHouseIndex === -1) throw createHouseNotFoundError(houseId);
-
-    const [deletedHouse] = database.houses.splice(foundHouseIndex, 1);
+    const deletedHouse = await HouseModel.findByIdAndDelete(houseId);
+    if (deletedHouse === null) createHouseNotFoundError(houseId);
 
     res.status(200).json(deletedHouse);
   } catch ({ status, message }) {
