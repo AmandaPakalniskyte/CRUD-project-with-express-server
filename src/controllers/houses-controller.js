@@ -1,28 +1,15 @@
 const { removeEmptyProps } = require('../helpers');
+const { createNotFoundError, sendErrorResponse } = require('../helpers/errors');
 const HouseModel = require('../models/house-model');
 
-const isValidHouse = ({ title, description, categoryId, img, price }) =>
-  title !== undefined && typeof title === 'string' && title !== '' &&
-  description !== undefined && typeof description === 'string' && description !== '' &&
-  categoryId !== undefined && typeof categoryId === 'string' && categoryId !== '' &&
-  img !== undefined && typeof img === 'string' && img !== '' &&
-  price !== undefined && typeof price === 'number' && price > 0;
-
-
-const createHouseNotFoundError = (houseId) => ({
-  message: `House with id '${houseId}' was not found`,
-  status: 404
-})
-
-const createHouseBadDataError = (dataObj) => ({
-  message: `House data is invalid:\n${JSON.stringify(dataObj, null, 4)}`,
-  status: 400
-});
+const createHouseNotFoundError = (houseId) => createNotFoundError(`House with id '${houseId}' was not found`);
 
 const fetchAll = async (req, res) => {
-  const houseDocuments = await HouseModel.find();
+  try {
+    const houseDocuments = await HouseModel.find();
 
-  res.status(200).json(houseDocuments);
+    res.status(200).json(houseDocuments);
+  } catch (err) { sendErrorResponse(err, res); }
 };
 
 const fetch = async (req, res) => {
@@ -33,24 +20,20 @@ const fetch = async (req, res) => {
     if (foundHouse === null) throw createHouseNotFoundError(houseId);
 
     res.status(200).json(foundHouse);
-  } catch ({ status, message }) {
-    res.status(status).json({ message });
-  }
+  } catch (err) { sendErrorResponse(err, res); }
 };
 
 const create = async (req, res) => {
   const newHouseData = req.body;
 
   try {
-    if (!isValidHouse(newHouseData)) throw createHouseBadDataError(newHouseData);
+    HouseModel.validate(newHouseData);
 
     const newHouse = await HouseModel.create(newHouseData)
 
     res.status(201).json(newHouse)
 
-  } catch ({ status, message }) {
-    res.status(status).json({ message });
-  }
+  } catch (err) { sendErrorResponse(err, res); }
 };
 
 const replace = async (req, res) => {
@@ -59,27 +42,19 @@ const replace = async (req, res) => {
   const newHouseData = { title, description, categoryId, img, price };
 
   try {
-    if (!isValidHouse(newHouseData)) throw createHouseBadDataError(newHouseData);
+    HouseModel.validate(newHouseData);
 
-    const updateHouse = await HouseModel.findByIdAndUpdate(
+    const updatedHouse = await HouseModel.findByIdAndUpdate(
       houseId,
       newHouseData,
       { new: true, runValidators: true }
     );
 
-    if (updateHouse === null) throw createHouseNotFoundError(houseId);
+    if (updatedHouse === null) throw createHouseNotFoundError(houseId);
 
-    res.status(200).json(updateHouse)
+    res.status(200).json(updatedHouse)
 
-  } catch (error) {
-    const { status, message } = error;
-
-    if (status && message) {
-      res.status(status).json({ message });
-    } else {
-      res.status(400).json({ message: error.message });
-    }
-  }
+  } catch (err) { sendErrorResponse(err, res); }
 };
 
 const update = async (req, res) => {
@@ -88,6 +63,8 @@ const update = async (req, res) => {
   const newHouseData = removeEmptyProps({ title, description, categoryId, img, price });
 
   try {
+    HouseModel.validateUpdate(newHouseData);
+
     const updatedHouse = await HouseModel.findByIdAndUpdate(
       houseId,
       newHouseData,
@@ -98,22 +75,18 @@ const update = async (req, res) => {
 
     res.status(200).json(updatedHouse)
 
-  } catch ({ status, message }) {
-    res.status(status).json({ message });
-  }
+  } catch (err) { sendErrorResponse(err, res); }
 };
 
 const remove = async (req, res) => {
   const houseId = req.params.id;
 
   try {
-    const deletedHouse = await HouseModel.findByIdAndDelete(houseId);
-    if (deletedHouse === null) createHouseNotFoundError(houseId);
+    const deleteHouse = await HouseModel.findByIdAndDelete(houseId);
+    if (deleteHouse === null) createHouseNotFoundError(houseId);
 
-    res.status(200).json(deletedHouse);
-  } catch ({ status, message }) {
-    res.status(status).json({ message });
-  }
+    res.status(200).json(deleteHouse);
+  } catch (err) { sendErrorResponse(err, res); }
 };
 
 module.exports = {
