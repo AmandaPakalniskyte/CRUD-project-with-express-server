@@ -6,7 +6,7 @@ const mongoose = require('mongoose');
 require('dotenv').config();
 
 const housesRouter = require('./routers/houses-router');
-
+const categoriesRouter = require('./routers/categories-router');
 
 const server = express();
 
@@ -22,9 +22,11 @@ try {
   server.use(express.json());
   server.use(morgan('tiny'));
   server.use(cors());
+  server.use(express.static('public'))
 
   // Routes
   server.use('/houses', housesRouter);
+  server.use('/categories', categoriesRouter);
 
   mongoose.connect(DB_CONNECTION, (err) => {
     if (err) {
