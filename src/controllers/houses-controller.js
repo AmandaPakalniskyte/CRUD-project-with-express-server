@@ -5,8 +5,12 @@ const HouseModel = require('../models/house-model');
 const createHouseNotFoundError = (houseId) => createNotFoundError(`House with id '${houseId}' was not found`);
 
 const fetchAll = async (req, res) => {
+  const { joinBy } = req.query;
+
   try {
-    const houseDocuments = await HouseModel.find();
+    const houseDocuments = joinBy === 'categoryId'
+      ? await HouseModel.find().populate('categoryId')
+      : await HouseModel.find();
 
     res.status(200).json(houseDocuments);
   } catch (err) { sendErrorResponse(err, res); }
@@ -14,9 +18,12 @@ const fetchAll = async (req, res) => {
 
 const fetch = async (req, res) => {
   const houseId = req.params.id;
+  const { joinBy } = req.query;
 
   try {
-    const foundHouse = await HouseModel.findById(houseId);
+    const foundHouse = joinBy === 'categoryId'
+      ? await HouseModel.findById(houseId).populate('categoryId')
+      : await HouseModel.findById(houseId);
     if (foundHouse === null) throw createHouseNotFoundError(houseId);
 
     res.status(200).json(foundHouse);
