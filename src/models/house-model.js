@@ -1,4 +1,4 @@
-const { Schema, model } = require('mongoose');
+const { Schema, Types, model } = require('mongoose');
 const yup = require('yup');
 
 const houseSchema = Schema({
@@ -11,7 +11,8 @@ const houseSchema = Schema({
     required: true,
   },
   categoryId: {
-    type: String,
+    type: Schema.Types.ObjectId,
+    ref: 'Category',
     required: true,
   },
   img: {
@@ -35,6 +36,11 @@ const houseValidationSchema = yup.object().shape({
     .required('Description is required'),
   categoryId: yup
     .string().typeError('CategoryId must be a string')
+    .test(
+      'is-mongo-object-id',
+      'CategoryId must be valid MongoDB object Id',
+      Types.ObjectId.isValid
+    )
     .required('CategoryId is required'),
   img: yup
     .string().typeError('Img must be a string')
@@ -48,7 +54,12 @@ const houseValidationSchema = yup.object().shape({
 const houseUpdateValidationSchema = yup.object().shape({
   title: yup.string().typeError('Title must be a string'),
   description: yup.string().typeError('Description must be a string'),
-  categoryId: yup.string().typeError('CategoryId must be a string'),
+  categoryId: yup.string().typeError('CategoryId must be a string')
+    .test(
+      'is-mongo-object-id',
+      'CategoryId must be valid MongoDB object Id',
+      Types.ObjectId.isValid
+    ),
   img: yup.string().typeError('Img must be a string'),
   price: yup.number()
     .typeError('Price must be a number')
