@@ -66,9 +66,9 @@ const houseUpdateValidationSchema = yup.object().shape({
     .positive('Price must be positive'),
 });
 
-houseSchema.statics.validate = (houseData) => houseValidationSchema.validateSync(houseData)
-houseSchema.statics.validateUpdate = (houseData) => houseUpdateValidationSchema.validateSync(houseData)
+houseSchema.statics.validateData = (houseData) => houseValidationSchema.validate(houseData)
+houseSchema.statics.validateUpdateData = (houseData) => houseUpdateValidationSchema.validate(houseData)
 
 const HouseModel = model('House', houseSchema);
 
-module.exports = HouseModel;
+module.exports = HouseModel; 

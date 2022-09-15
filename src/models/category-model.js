@@ -20,8 +20,8 @@ const categoryUpdateValidationSchema = yup.object().shape({
   title: yup.string().typeError('Category title must be a string'),
 });
 
-categorySchema.statics.validate = (categoryData) => categoryValidationSchema.validateSync(categoryData)
-categorySchema.statics.validateUpdate = (categoryData) => categoryUpdateValidationSchema.validateSync(categoryData)
+categorySchema.statics.validateData = (categoryData) => categoryValidationSchema.validate(categoryData)
+categorySchema.statics.validateUpdateData = (categoryData) => categoryUpdateValidationSchema.validate(categoryData)
 
 const CategoryModel = model('Category', categorySchema);
 

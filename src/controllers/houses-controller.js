@@ -34,7 +34,7 @@ const create = async (req, res) => {
   const newHouseData = req.body;
 
   try {
-    HouseModel.validate(newHouseData);
+    await HouseModel.validateData(newHouseData);
 
     const newHouse = await HouseModel.create(newHouseData)
 
@@ -49,7 +49,7 @@ const replace = async (req, res) => {
   const newHouseData = { title, description, categoryId, img, price };
 
   try {
-    HouseModel.validate(newHouseData);
+    await HouseModel.validateData(newHouseData);
 
     const updatedHouse = await HouseModel.findByIdAndUpdate(
       houseId,
@@ -70,7 +70,7 @@ const update = async (req, res) => {
   const newHouseData = removeEmptyProps({ title, description, categoryId, img, price });
 
   try {
-    HouseModel.validateUpdate(newHouseData);
+    await HouseModel.validateUpdateData(newHouseData);
 
     const updatedHouse = await HouseModel.findByIdAndUpdate(
       houseId,

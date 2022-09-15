@@ -27,7 +27,7 @@ const create = async (req, res) => {
   const newCategoryData = req.body;
 
   try {
-    CategoryModel.validate(newCategoryData);
+    await CategoryModel.validateData(newCategoryData);
     const newCategory = await CategoryModel.create(newCategoryData)
 
     res.status(201).json(newCategory)
@@ -41,7 +41,7 @@ const replace = async (req, res) => {
   const newCategoryData = { title };
 
   try {
-    CategoryModel.validate(newCategoryData);
+    await CategoryModel.validateData(newCategoryData);
 
     const updatedCategory = await CategoryModel.findByIdAndUpdate(
       categoryId,
@@ -62,7 +62,7 @@ const update = async (req, res) => {
   const newCategoryData = removeEmptyProps({ title });
 
   try {
-    CategoryModel.validateUpdate(newCategoryData);
+    await CategoryModel.validateUpdateData(newCategoryData);
     const updatedCategory = await CategoryModel.findByIdAndUpdate(
       categoryId,
       newCategoryData,

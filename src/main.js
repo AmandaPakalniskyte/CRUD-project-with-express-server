@@ -7,6 +7,7 @@ require('dotenv').config();
 
 const housesRouter = require('./routers/houses-router');
 const categoriesRouter = require('./routers/categories-router');
+const usersRouter = require('./routers/users-router');
 
 const server = express();
 
@@ -27,6 +28,7 @@ try {
   // Routes
   server.use('/houses', housesRouter);
   server.use('/categories', categoriesRouter);
+  server.use('/users', usersRouter);
 
   mongoose.connect(DB_CONNECTION, (err) => {
     if (err) {
