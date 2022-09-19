@@ -7,12 +7,13 @@ const {
   update,
   remove,
 } = require('../controllers/users-controller');
+const { requireAuth } = require('../middleware/auth-middleware');
 
 const usersRouter = Router();
 
-usersRouter.get('/', fetchAll);
+usersRouter.get('/', requireAuth, fetchAll);
 
-usersRouter.get('/:id', fetch);
+usersRouter.get('/:id', requireAuth, fetch);
 
 usersRouter.post('/', create);
 
