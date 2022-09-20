@@ -9,6 +9,7 @@ const housesRouter = require('./routers/houses-router');
 const categoriesRouter = require('./routers/categories-router');
 const usersRouter = require('./routers/users-router');
 const authRouter = require('./routers/auth-router');
+const cartItemsRouter = require('./routers/cart-items-router');
 
 const server = express();
 
@@ -31,6 +32,7 @@ try {
   server.use('/categories', categoriesRouter);
   server.use('/users', usersRouter);
   server.use('/auth', authRouter);
+  server.use('/cart-items', cartItemsRouter);
 
   mongoose.connect(DB_CONNECTION, (err) => {
     if (err) {

@@ -30,7 +30,7 @@ const userSchema = Schema({
     }],
     default: []
   },
-  favoredHouses: {
+  favoriteHouses: {
     type: [{
       type: Schema.Types.ObjectId,
       ref: 'House',
@@ -99,12 +99,12 @@ const userValidationSchema = yup.object({
 
   cartItems: yup.array(cartItemValidationSchema),
 
-  favoredHouses: yup
-    .array(yup.string().typeError('User.favoredHouses element must be a string')
-      .required('User.favoredHouses element is required')
+  favoriteHouses: yup
+    .array(yup.string().typeError('User.favoriteHouses element must be a string')
+      .required('User.favoriteHouses element is required')
       .test(
         'is-mongo-object-id',
-        'User.favoredHouses element must be valid MongoDB object Id',
+        'User.favoriteHouses element must be valid MongoDB object Id',
         Types.ObjectId.isValid
       )),
 });
@@ -140,12 +140,12 @@ const userUpdateValidationSchema = yup.object({
 
   cartItems: yup.array(cartItemValidationSchema),
 
-  favoredHouses: yup
-    .array(yup.string().typeError('User.favoredHouses element must be a string')
-      .required('User.favoredHouses element is required')
+  favoriteHouses: yup
+    .array(yup.string().typeError('User.favoriteHouses element must be a string')
+      .required('User.favoriteHouses element is required')
       .test(
         'is-mongo-object-id',
-        'User.favoredHouses element must be valid MongoDB object Id',
+        'User.favoriteHouses element must be valid MongoDB object Id',
         Types.ObjectId.isValid
       )),
 });
