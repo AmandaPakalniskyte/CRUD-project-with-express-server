@@ -1,5 +1,6 @@
 const { Schema, Types, model } = require('mongoose');
 const yup = require('yup');
+const HouseModel = require('./house-model');
 
 const userSchema = Schema({
   email: {
@@ -24,12 +25,12 @@ const userSchema = Schema({
       },
       amount: {
         type: Number,
-        required: true
+        required: true,
       }
     }],
     default: []
   },
-  favoriteHouses: {
+  favoredHouses: {
     type: [{
       type: Schema.Types.ObjectId,
       ref: 'House',
@@ -39,6 +40,30 @@ const userSchema = Schema({
   },
 }, {
   timestamps: true
+});
+
+const cartItemValidationSchema = yup.object({
+  houseId: yup.string().typeError('User.cartItems element.houseId must be a string')
+    .required('User.cartItems element.houseId is required')
+    .test(
+      'is-mongo-object-id',
+      'User.cartItems element.houseId must be valid MongoDB object Id',
+      Types.ObjectId.isValid
+    )
+    .test(
+      'house-exists',
+      'house was not found using cartItems element.houseId ',
+      async (houseId) => {
+        const houseExists = await HouseModel.exists({ _id: houseId });
+
+        return houseExists;
+      }
+    ),
+
+  amount: yup.number().typeError('User.cartItems element.amount must be a number')
+    .required('User.cartItems element.amount is required')
+    .integer('User.cartItems element.amount must be integer')
+    .positive('User.cartItems element.amount must be positive'),
 });
 
 const userValidationSchema = yup.object({
@@ -59,7 +84,7 @@ const userValidationSchema = yup.object({
   password: yup.string().typeError('User.password must be a string')
     .required('User.password is required')
     .min(8, 'User.password must have at least 8 symbols')
-    .max(32, 'User.password must have less than 32 symbols')
+    .max(32, 'User.password must be no more than 32 symbols')
     .matches(/[a-z]/, 'User.password must have at least one lowercase letter')
     .matches(/[A-Z]/, 'User.password must have at least one uppercase letter')
     .matches(/\d/, 'User.password must have at least one number')
@@ -72,26 +97,14 @@ const userValidationSchema = yup.object({
   role: yup.string().typeError('User.role must be a string')
     .oneOf(['USER', 'ADMIN']),
 
-  cartItems: yup
-    .array(yup.object({
-      houseId: yup.string().typeError('User.cartItems element.houseId must be a string')
-        .required('User.cartItems element.houseId is required')
-        .test(
-          'is-mongo-object-id',
-          'User.cartItems element.houseId must be valid MongoDB object Id',
-          Types.ObjectId.isValid
-        ),
-      amount: yup.number().typeError('User.cartItems element.amount must be a number')
-        .required('User.cartItems element.amount is required')
-        .positive('User.cartItems element.amount must be positive'),
-    })),
+  cartItems: yup.array(cartItemValidationSchema),
 
-  favoriteHouses: yup
-    .array(yup.string().typeError('User.favoriteHouses element must be a string')
-      .required('User.favoriteHouses element is required')
+  favoredHouses: yup
+    .array(yup.string().typeError('User.favoredHouses element must be a string')
+      .required('User.favoredHouses element is required')
       .test(
         'is-mongo-object-id',
-        'User.favoriteHouses element must be valid MongoDB object Id',
+        'User.favoredHouses element must be valid MongoDB object Id',
         Types.ObjectId.isValid
       )),
 });
@@ -125,35 +138,22 @@ const userUpdateValidationSchema = yup.object({
   role: yup.string().typeError('User.role must be a string')
     .oneOf(['USER', 'ADMIN']),
 
-  cartItems: yup
-    .array(yup.object({
-      houseId: yup.string().typeError('User.cartItems element.houseId must be a string')
-        .required('User.cartItems element.houseId is required')
-        .test(
-          'is-mongo-object-id',
-          'User.cartItems element.houseId must be valid MongoDB object Id',
-          Types.ObjectId.isValid
-        ),
-      amount: yup.number().typeError('User.cartItems element.amount must be a number')
-        .required('User.cartItems element.amount is required')
-        .positive('User.cartItems element.amount must be positive'),
-    })),
+  cartItems: yup.array(cartItemValidationSchema),
 
-  favoriteHouses: yup
-    .array(yup.string().typeError('User.favoriteHouses element must be a string')
-      .required('User.favoriteHouses element is required')
+  favoredHouses: yup
+    .array(yup.string().typeError('User.favoredHouses element must be a string')
+      .required('User.favoredHouses element is required')
       .test(
         'is-mongo-object-id',
-        'User.favoriteHouses element must be valid MongoDB object Id',
+        'User.favoredHouses element must be valid MongoDB object Id',
         Types.ObjectId.isValid
       )),
 });
 
 userSchema.statics.validateData = (userData) => userValidationSchema.validate(userData);
 userSchema.statics.validateUpdateData = (userData) => userUpdateValidationSchema.validate(userData);
+userSchema.statics.validateCartItem = (cartItem) => cartItemValidationSchema.validate(cartItem);
 
 const UserModel = model('User', userSchema);
-
-UserModel.validate
 
 module.exports = UserModel;
