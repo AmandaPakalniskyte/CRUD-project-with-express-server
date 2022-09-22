@@ -34,7 +34,6 @@ const create = async (req, res) => {
       password,
       role,
       cartItems,
-      favouriteHouses,
     } = requestData;
 
     const newUserDoc = await UserModel.create({
@@ -42,7 +41,6 @@ const create = async (req, res) => {
       password: await hashPassword(password),
       role,
       cartItems,
-      favouriteHouses,
     });
 
     res.status(201).json(createUserViewModel(newUserDoc))
@@ -61,7 +59,6 @@ const replace = async (req, res) => {
       password,
       role,
       cartItems,
-      favouriteHouses,
     } = requestData;
 
     const userDoc = await UserModel.findById(userId);
@@ -74,7 +71,6 @@ const replace = async (req, res) => {
         password: await hashPassword(password),
         role,
         cartItems,
-        favouriteHouses,
         createdAt: new Date(),
         updatedAt: new Date(),
         __v: userDoc.__v,
@@ -100,7 +96,6 @@ const update = async (req, res) => {
       password,
       role,
       cartItems,
-      favouriteHouses,
     } = requestData;
 
     const updatedUserDoc = await UserModel.findByIdAndUpdate(
@@ -110,7 +105,6 @@ const update = async (req, res) => {
         password: password && await hashPassword(password),
         role,
         cartItems,
-        favouriteHouses,
       },
       { new: true }
     );
