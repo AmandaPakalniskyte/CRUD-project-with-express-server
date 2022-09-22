@@ -1,32 +1,42 @@
 const { removeEmptyProps } = require('../helpers');
 const { createNotFoundError, sendErrorResponse } = require('../helpers/errors');
 const HouseModel = require('../models/house-model');
+const createHousePopulatedViewModel = require('../view-models/create-house-populated-view-model');
+const createHouseViewModel = require('../view-models/create-house-view-model');
 
 const createHouseNotFoundError = (houseId) => createNotFoundError(`House with id '${houseId}' was not found`);
 
 const fetchAll = async (req, res) => {
   const { joinBy } = req.query;
+  const joinedDocuments = joinBy === 'categoryId';
 
   try {
-    const houseDocuments = joinBy === 'categoryId'
+    const houseDocs = joinedDocuments
       ? await HouseModel.find().populate('categoryId')
       : await HouseModel.find();
 
-    res.status(200).json(houseDocuments);
+    res.status(200).json(joinedDocuments
+      ? houseDocs.map(createHousePopulatedViewModel)
+      : houseDocs.map(createHouseViewModel)
+    );
   } catch (err) { sendErrorResponse(err, res); }
 };
 
 const fetch = async (req, res) => {
   const houseId = req.params.id;
   const { joinBy } = req.query;
+  const joinedDocument = joinBy === 'categoryId';
 
   try {
-    const foundHouse = joinBy === 'categoryId'
+    const foundHouseDoc = joinedDocument
       ? await HouseModel.findById(houseId).populate('categoryId')
       : await HouseModel.findById(houseId);
-    if (foundHouse === null) throw createHouseNotFoundError(houseId);
+    if (foundHouseDoc === null) throw createHouseNotFoundError(houseId);
 
-    res.status(200).json(foundHouse);
+    res.status(200).json(joinedDocument
+      ? createHousePopulatedViewModel(foundHouseDoc)
+      : createHouseViewModel(foundHouseDoc)
+    );
   } catch (err) { sendErrorResponse(err, res); }
 };
 
@@ -36,9 +46,9 @@ const create = async (req, res) => {
   try {
     await HouseModel.validateData(newHouseData);
 
-    const newHouse = await HouseModel.create(newHouseData)
+    const newHouseDoc = await HouseModel.create(newHouseData)
 
-    res.status(201).json(newHouse)
+    res.status(201).json(createHouseViewModel(newHouseDoc))
 
   } catch (err) { sendErrorResponse(err, res); }
 };
@@ -51,15 +61,15 @@ const replace = async (req, res) => {
   try {
     await HouseModel.validateData(newHouseData);
 
-    const updatedHouse = await HouseModel.findByIdAndUpdate(
+    const updatedHouseDoc = await HouseModel.findByIdAndUpdate(
       houseId,
       newHouseData,
       { new: true, runValidators: true }
     );
 
-    if (updatedHouse === null) throw createHouseNotFoundError(houseId);
+    if (updatedHouseDoc === null) throw createHouseNotFoundError(houseId);
 
-    res.status(200).json(updatedHouse)
+    res.status(200).json(createHouseViewModel(updatedHouseDoc))
 
   } catch (err) { sendErrorResponse(err, res); }
 };
@@ -72,15 +82,15 @@ const update = async (req, res) => {
   try {
     await HouseModel.validateUpdateData(newHouseData);
 
-    const updatedHouse = await HouseModel.findByIdAndUpdate(
+    const updatedHouseDoc = await HouseModel.findByIdAndUpdate(
       houseId,
       newHouseData,
       { new: true }
     );
 
-    if (updatedHouse === null) throw createHouseNotFoundError(houseId);
+    if (updatedHouseDoc === null) throw createHouseNotFoundError(houseId);
 
-    res.status(200).json(updatedHouse)
+    res.status(200).json(createHouseViewModel(updatedHouseDoc))
 
   } catch (err) { sendErrorResponse(err, res); }
 };
@@ -89,10 +99,10 @@ const remove = async (req, res) => {
   const houseId = req.params.id;
 
   try {
-    const deleteHouse = await HouseModel.findByIdAndDelete(houseId);
-    if (deleteHouse === null) createHouseNotFoundError(houseId);
+    const deletedHouseDoc = await HouseModel.findByIdAndDelete(houseId);
+    if (deletedHouseDoc === null) createHouseNotFoundError(houseId);
 
-    res.status(200).json(deleteHouse);
+    res.status(200).json(createHouseViewModel(deletedHouseDoc));
   } catch (err) { sendErrorResponse(err, res); }
 };
 
