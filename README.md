@@ -5,6 +5,8 @@
 npm i
 ```
 
+## fill in env. file
+
 ## launch server
 ```
 npm run start
