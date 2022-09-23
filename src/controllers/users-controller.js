@@ -120,8 +120,8 @@ const remove = async (req, res) => {
   const userId = req.params.id;
 
   try {
-    const deletedUser = await UserModel.findByIdAndDelete(userId);
-    if (deletedUser === null) createUserNotFoundError(userId);
+    const deletedUserDoc = await UserModel.findByIdAndDelete(userId);
+    if (deletedUserDoc === null) createUserNotFoundError(userId);
 
     res.status(200).json(createUserViewModel(deletedUserDoc));
   } catch (err) { sendErrorResponse(err, res); }

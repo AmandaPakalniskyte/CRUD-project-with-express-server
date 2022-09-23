@@ -64,13 +64,13 @@ const update = async (req, res) => {
 
   try {
     await CategoryModel.validateUpdateData(newCategoryData);
-    const updatedCategory = await CategoryModel.findByIdAndUpdate(
+    const updatedCategoryDoc = await CategoryModel.findByIdAndUpdate(
       categoryId,
       newCategoryData,
       { new: true }
     );
 
-    if (updatedCategory === null) throw createCategoryNotFoundError(categoryId);
+    if (updatedCategoryDoc === null) throw createCategoryNotFoundError(categoryId);
 
     res.status(200).json(createCategoryViewModel(updatedCategoryDoc))
 

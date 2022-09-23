@@ -21,12 +21,12 @@ const create = async (req, res) => {
     const foundCartItemDoc = findHouse(req.authUser.cartItems, data.houseId);
     if (foundCartItemDoc) throw createBadDataError('House already exists in cart');
 
-    const newCartItem = {
+    const newCartItemDoc = {
       houseId: data.houseId,
       amount: data.amount,
     }
 
-    req.authUser.cartItems.push(newCartItem);
+    req.authUser.cartItems.push(newCartItemDoc);
 
     await req.authUser.save()
 
@@ -52,7 +52,7 @@ const update = async (req, res) => {
 
     await req.authUser.save();
 
-    res.status(200).json(createCartItemViewModel(foundCartItemDocDoc))
+    res.status(200).json(createCartItemViewModel(foundCartItemDoc))
   } catch (error) {
     sendErrorResponse(error, res)
   }
